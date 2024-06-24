@@ -8,6 +8,8 @@ rustc -C opt-level=3 -C target-cpu=native -C lto -C codegen-units=1 -C debuginfo
 swiftc -O swift/collatz.swift -o swift/collatz
 gfortran -O3 fortran/collatz.f90 -o fortran/collatz
 nim compile -d:release -o:nim/collatz nim/collatz.nim
+gdc -O3 -funroll-loops -finline-functions -o d/collatz d/collatz.d
+v -o v/collatz v/collatz.v
 
 cd java
 mvn clean compile assembly:single

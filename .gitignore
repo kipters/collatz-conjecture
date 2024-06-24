@@ -1,3 +1,17 @@
 dotnet/bin/
 dotnet/obj/
 off/
+
+c/main
+dotnet/aot
+dotnet/dist
+dotnet/r2r
+fortran/collatz
+go/main
+java/target
+nim/collatz
+rust/collatz
+swift/collatz
+zig/collatz
+d/collatz
+v/collatz

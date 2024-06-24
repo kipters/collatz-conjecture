@@ -18,4 +18,9 @@ hyperfine --warmup 3 \
     'julia julia/collatz.jl' \
     'zig/collatz' \
     'nim/collatz' \
+    'lua lua/collatz.lua' \
+    'd/collatz' \
+    'bun node/index.js' \
+    'perl perl/collatz.pl' \
+    'v/collatz' \
     'python3 python/collatz.py' \
