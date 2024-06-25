@@ -9,10 +9,11 @@ swiftc -O swift/collatz.swift -o swift/collatz
 gfortran -O3 fortran/collatz.f90 -o fortran/collatz
 nim compile -d:release -o:nim/collatz nim/collatz.nim
 gdc -O3 -funroll-loops -finline-functions -o d/collatz d/collatz.d
-v -o v/collatz v/collatz.v
+v -prod -o v/collatz v/collatz.v
 
 cd java
 mvn clean compile assembly:single
+cp target/collatz-1.0-SNAPSHOT-jar-with-dependencies.jar ../java/collatz.jar
 cd ..
 
 cd zig

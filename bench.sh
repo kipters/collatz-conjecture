@@ -6,7 +6,7 @@ hyperfine --warmup 3 \
     'dotnet/dist/Collatz' \
     'dotnet/r2r/Collatz' \
     'dotnet/aot/Collatz' \
-    'java -jar java/target/collatz-1.0-SNAPSHOT-jar-with-dependencies.jar' \
+    'java -jar java/collatz.jar' \
     'rust/collatz' \
     'node node/index.js' \
     'php php/collatz.php' \
