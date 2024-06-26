@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-hyperfine --warmup 3 \
+hyperfine --warmup 5 -i \
     'c/main' \
     'go/main' \
     'dotnet/dist/Collatz' \

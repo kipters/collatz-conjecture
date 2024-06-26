@@ -1,0 +1,55 @@
+FROM debian:bookworm
+ARG DEBIAN_FRONTEND=noninteractive
+ARG HYPERFINE_VERSION=1.18.0
+ARG DOTNET_VERSION=8.0
+ARG JAVA_VERSION=21
+ARG NODE_VERSION=20.15.0
+ARG ELIXIR_VERSION=1.17
+ENV LC_ALL=C.UTF-8
+RUN apt-get update && apt-get upgrade -y && apt-get install -y wget git curl xz-utils make \
+    java-common php8.2 ruby erlang lua5.4
+# Install hyperfine
+RUN wget -O hyperfine.deb https://github.com/sharkdp/hyperfine/releases/download/v${HYPERFINE_VERSION}/hyperfine_${HYPERFINE_VERSION}_$(dpkg --print-architecture).deb && \
+    dpkg -i hyperfine.deb && \
+    rm hyperfine.deb
+# Install dotnet
+RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
+    dpkg -i packages-microsoft-prod.deb && \
+    apt-get update && \
+    apt-get install -y dotnet-runtime-${DOTNET_VERSION} && \
+    rm packages-microsoft-prod.deb
+# Install Java
+RUN [[ $(uname -m) == "aarch64" ]] && \
+    wget https://corretto.aws/downloads/latest/amazon-corretto-${JAVA_VERSION}-aarch64-linux-jdk.deb -O corretto.deb || \
+    wget https://corretto.aws/downloads/latest/amazon-corretto-${JAVA_VERSION}-x64-linux-jdk.deb -O corretto.deb && \
+    dpkg -i corretto.deb && \
+    rm corretto.deb
+# Install Node.js
+RUN [[ $(uname -m) == "aarch64" ]] && \
+    wget https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-arm64.tar.xz -O nodejs.tar.xz || \
+    wget https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz -O nodejs.tar.xz && \
+    tar -xf nodejs.tar.xz -C /usr/local --strip-components=1 && \
+    rm nodejs.tar.xz
+# Install Elixir
+RUN git clone --branch=v${ELIXIR_VERSION} --depth=1 https://github.com/elixir-lang/elixir.git && \
+    cd elixir && \
+    make clean compile && \
+    make install && \
+    cd .. && \
+    rm -rf elixir
+# Install Julia
+RUN wget https://install.julialang.org -O install-julia.sh && \
+    chmod +x install-julia.sh && \
+    ./install-julia.sh -y && \
+    rm install-julia.sh
+# Install Bun
+RUN wget https://bun.sh/install -O install-bun.sh && \
+    chmod +x install-bun.sh && \
+    ./install-bun.sh && \
+    rm install-bun.sh
+ENV PATH="/root/.juliaup/bin:/root/.bun/bin:${PATH}"
+WORKDIR /collatz
+COPY . .
+COPY --from=binaries / .
+
+ENTRYPOINT [ "/collatz/bench.sh" ]

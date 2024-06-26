@@ -99,3 +99,11 @@ target "binaries" {
     }
     output = ["."]
 }
+
+target "bench" {
+    dockerfile = "Dockerfile.bench"
+    contexts = {
+        binaries = "target:binaries"
+    }
+    tags = ["collatz-bench"]
+}
