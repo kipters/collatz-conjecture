@@ -1,4 +1,4 @@
-FROM rust:1.79-bookworm AS build
+FROM rust:1.85-bookworm AS build
 COPY rust /src
 WORKDIR /src
 RUN rustc -C opt-level=3 \

@@ -1,6 +1,6 @@
 FROM base AS build
 WORKDIR /tmp
-RUN git clone --branch=weekly.2024.25 --depth=1 https://github.com/vlang/v
+RUN git clone --branch=weekly.2025.12 --depth=1 https://github.com/vlang/v
 WORKDIR /tmp/v
 RUN make
 RUN ./v symlink

@@ -1,5 +1,5 @@
 FROM base AS build
-ARG ZIG_VERSION=0.13.0
+ARG ZIG_VERSION=0.14.0
 WORKDIR /tmp
 RUN wget -O zig.tar.xz https://ziglang.org/download/${ZIG_VERSION}/zig-linux-$(uname -m)-${ZIG_VERSION}.tar.xz && \
     tar -xf zig.tar.xz && \

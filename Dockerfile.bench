@@ -1,33 +1,41 @@
 FROM debian:bookworm
 ARG DEBIAN_FRONTEND=noninteractive
-ARG HYPERFINE_VERSION=1.18.0
-ARG DOTNET_VERSION=8.0
-ARG JAVA_VERSION=21
-ARG NODE_VERSION=20.15.0
-ARG ELIXIR_VERSION=1.17
+ARG HYPERFINE_VERSION=1.19.0
+ARG DOTNET_VERSION=9.0
+ARG JAVA_VERSION=23
+ARG NODE_VERSION=23.10.0
+ARG ELIXIR_VERSION=1.18
 ENV LC_ALL=C.UTF-8
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
 RUN apt-get update && apt-get upgrade -y && apt-get install -y wget git curl xz-utils make \
-    java-common php8.2 ruby erlang lua5.4
+    java-common ruby erlang lua5.4 lsb-release ca-certificates apt-transport-https && \
+    curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb && \
+    dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
+    rm /tmp/debsuryorg-archive-keyring.deb && \
+    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
+    apt-get update && apt-get install -y php8.4
+
 # Install hyperfine
 RUN wget -O hyperfine.deb https://github.com/sharkdp/hyperfine/releases/download/v${HYPERFINE_VERSION}/hyperfine_${HYPERFINE_VERSION}_$(dpkg --print-architecture).deb && \
     dpkg -i hyperfine.deb && \
     rm hyperfine.deb
 # Install dotnet
-RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
-    dpkg -i packages-microsoft-prod.deb && \
-    apt-get update && \
-    apt-get install -y dotnet-runtime-${DOTNET_VERSION} && \
-    rm packages-microsoft-prod.deb
+# RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
+#     dpkg -i packages-microsoft-prod.deb && \
+#     apt-get update && \
+#     apt-get install -y dotnet-runtime-${DOTNET_VERSION} && \
+#     rm packages-microsoft-prod.deb
+# RUN curl -sSL https://dot.net/v1/dotnet-install.sh | bash --version ${DOTNET_VERSION}
+RUN wget https://dot.net/v1/dotnet-install.sh && \
+    chmod +x ./dotnet-install.sh && \
+    ./dotnet-install.sh --channel ${DOTNET_VERSION} && \
+    rm ./dotnet-install.sh
 # Install Java
-RUN [[ $(uname -m) == "aarch64" ]] && \
-    wget https://corretto.aws/downloads/latest/amazon-corretto-${JAVA_VERSION}-aarch64-linux-jdk.deb -O corretto.deb || \
-    wget https://corretto.aws/downloads/latest/amazon-corretto-${JAVA_VERSION}-x64-linux-jdk.deb -O corretto.deb && \
+RUN wget https://corretto.aws/downloads/latest/amazon-corretto-${JAVA_VERSION}-aarch64-linux-jdk.deb -O corretto.deb && \
     dpkg -i corretto.deb && \
     rm corretto.deb
 # Install Node.js
-RUN [[ $(uname -m) == "aarch64" ]] && \
-    wget https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-arm64.tar.xz -O nodejs.tar.xz || \
-    wget https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz -O nodejs.tar.xz && \
+RUN wget https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-arm64.tar.xz -O nodejs.tar.xz && \
     tar -xf nodejs.tar.xz -C /usr/local --strip-components=1 && \
     rm nodejs.tar.xz
 # Install Elixir
@@ -47,7 +55,8 @@ RUN wget https://bun.sh/install -O install-bun.sh && \
     chmod +x install-bun.sh && \
     ./install-bun.sh && \
     rm install-bun.sh
-ENV PATH="/root/.juliaup/bin:/root/.bun/bin:${PATH}"
+ENV DOTNET_ROOT=/root/.dotnet
+ENV PATH="/root/.juliaup/bin:/root/.bun/bin:${DOTNET_ROOT}:${PATH}"
 WORKDIR /collatz
 COPY . .
 COPY --from=binaries / .

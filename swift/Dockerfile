@@ -1,4 +1,4 @@
-FROM swift:5.10-bookworm AS build
+FROM swift:6.0.3-bookworm AS build
 RUN apt-get update && apt-get -y install clang
 COPY swift /src
 WORKDIR /src
