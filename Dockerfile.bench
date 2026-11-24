@@ -1,10 +1,10 @@
-FROM debian:bookworm
+FROM debian:trixie
 ARG DEBIAN_FRONTEND=noninteractive
-ARG HYPERFINE_VERSION=1.19.0
-ARG DOTNET_VERSION=9.0
-ARG JAVA_VERSION=23
-ARG NODE_VERSION=23.10.0
-ARG ELIXIR_VERSION=1.18
+ARG HYPERFINE_VERSION=2.0.0
+ARG DOTNET_VERSION=11.0
+ARG JAVA_VERSION=27
+ARG NODE_VERSION=26.13.1
+ARG ELIXIR_VERSION=1.20.5
 ENV LC_ALL=C.UTF-8
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
 RUN apt-get update && apt-get upgrade -y && apt-get install -y wget git curl xz-utils make \
@@ -60,5 +60,6 @@ ENV PATH="/root/.juliaup/bin:/root/.bun/bin:${DOTNET_ROOT}:${PATH}"
 WORKDIR /collatz
 COPY . .
 COPY --from=binaries / .
+RUN apt-get install -y python3
 
 ENTRYPOINT [ "/collatz/bench.sh" ]

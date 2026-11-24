@@ -1,4 +1,4 @@
-FROM rust:1.85-bookworm AS build
+FROM rust:1.100-trixie AS build
 COPY rust /src
 WORKDIR /src
 RUN rustc -C opt-level=3 \
@@ -13,6 +13,6 @@ RUN rustc -C opt-level=3 \
     -o collatz \
     collatz.rs
 
-FROM debian:bookworm
+FROM debian:trixie
 COPY --from=build /src/collatz /app/collatz
 ENTRYPOINT [ "/app/collatz" ]

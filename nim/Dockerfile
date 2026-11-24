@@ -3,8 +3,8 @@
 # WORKDIR /src
 # RUN nim compile -d:release -o:collatz collatz.nim
 
-FROM debian:bookworm AS build
-ARG NIM_VERSION=2.2.2
+FROM debian:trixie AS build
+ARG NIM_VERSION=2.4.2
 RUN apt-get update && apt-get install -y build-essential curl git
 RUN curl -sSLo /tmp/nim.tar.xz https://nim-lang.org/download/nim-${NIM_VERSION}.tar.xz && \
     mkdir -p /tmp/nim && \
@@ -19,6 +19,6 @@ COPY nim /src
 WORKDIR /src
 RUN nim compile -d:release -o:collatz collatz.nim
 
-FROM debian:bookworm
+FROM debian:trixie
 COPY --from=build /src/collatz /app/collatz
 ENTRYPOINT [ "/app/collatz" ]

@@ -4,6 +4,6 @@ COPY d /src
 WORKDIR /src
 RUN gdc -O3 -funroll-loops -finline-functions -static-libphobos -o collatz collatz.d
 
-FROM debian:bookworm
+FROM debian:trixie
 COPY --from=build /src/collatz /app/collatz
 ENTRYPOINT [ "/app/collatz" ]

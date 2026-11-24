@@ -1,8 +1,8 @@
-FROM golang:1.24 AS build
+FROM golang:1.27.4 AS build
 COPY go /src
 WORKDIR /src
 RUN go build -o main main.go
 
-FROM debian:bookworm
+FROM debian:trixie
 COPY --from=build /src/main /app/main
 ENTRYPOINT [ "/app/main" ]

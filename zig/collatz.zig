@@ -13,13 +13,16 @@ fn collatz(seed: i64) i64 {
     return steps;
 }
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
     var collatzResult: i64 = 0;
     var seed: i64 = 1;
     while (seed <= 1_000_000) : (seed += 1) {
         collatzResult += collatz(seed);
     }
 
-    const stdout = std.io.getStdOut().writer();
+    var buffer: [64]u8 = undefined;
+    var file_writer = std.Io.File.stdout().writer(init.io, &buffer);
+    const stdout = &file_writer.interface;
     try stdout.print("steps {}\n", .{collatzResult});
+    try stdout.flush();
 }
